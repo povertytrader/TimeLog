@@ -926,6 +926,29 @@ body.popup-mode .popup-close-msg {
 
 .popup-close-msg { display: none; }
 
+/* Hour preset buttons */
+.hour-presets {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.hour-preset-btn {
+  padding: 5px 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.hour-preset-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.hour-preset-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
 /* Recent entries in New Entry tab */
 .recent-entries-section {
   margin-top: 24px;
@@ -1062,7 +1085,16 @@ body.popup-mode .popup-open-app-btn { display: flex; }
         </div>
         <div class="form-group">
           <label class="form-label">Hours</label>
-          <input type="number" class="form-input" id="entryHours" min="0.25" max="24" step="0.25" value="1">
+          <div style="display:flex;align-items:center;gap:4px;">
+            <input type="number" class="form-input" id="entryHours" min="0.25" max="24" step="0.25" value="1" style="width:80px;flex-shrink:0;">
+            <div class="hour-presets" style="margin-top:0;flex:1;">
+              <button class="hour-preset-btn" data-hours="0.5">½h</button>
+              <button class="hour-preset-btn" data-hours="1">1h</button>
+              <button class="hour-preset-btn" data-hours="2">2h</button>
+              <button class="hour-preset-btn" data-hours="4">4h</button>
+              <button class="hour-preset-btn" data-hours="8">8h</button>
+            </div>
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Client</label>
@@ -1140,6 +1172,7 @@ body.popup-mode .popup-open-app-btn { display: flex; }
       <div style="display: flex; gap: 8px;">
         <button class="btn btn-secondary btn-sm" id="copyReport">&#128203; Copy to Clipboard</button>
         <button class="btn btn-secondary btn-sm" id="exportCSV">&#8681; Export CSV</button>
+        <button class="btn btn-secondary btn-sm" id="exportXLSX">&#8681; Export Excel</button>
       </div>
     </div>
     <div class="week-nav" style="margin-bottom: 12px;">
@@ -1180,10 +1213,12 @@ body.popup-mode .popup-open-app-btn { display: flex; }
         </table>
       </div>
     </div>
-    <div class="entries-summary" style="margin-top: 8px; display: flex; gap: 16px; align-items: center;">
+    <div class="entries-summary" style="margin-top: 8px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
       <span>Total: <strong id="reportTotal">0h</strong></span>
       <span id="reportCount" style="font-size: 12px; color: var(--text-muted);"></span>
+      <button class="btn btn-secondary btn-sm" id="toggleClientSummary" style="margin-left: auto;">&#128202; By Client</button>
     </div>
+    <div id="clientSummary" style="display:none; margin-top: 12px;"></div>
   </div>
 
   <div id="tab-manage" class="tab-content">
@@ -1471,7 +1506,7 @@ body.popup-mode .popup-open-app-btn { display: flex; }
   function bubbleLabel(entry) {
     var client = entry.client || "No Client";
     var desc = entry.description || entry.task || "";
-    var truncated = desc.length > 60 ? desc.substring(0, 60) + "…" : desc;
+    var truncated = desc.length > 90 ? desc.substring(0, 90) + "…" : desc;
     return client + "." + truncated;
   }
 
@@ -1551,6 +1586,24 @@ body.popup-mode .popup-open-app-btn { display: flex; }
       setTimeout(function() { dropdown.classList.remove("show"); }, 150);
     });
   }
+
+  // Hour preset buttons
+  document.querySelectorAll(".hour-preset-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      document.querySelectorAll(".hour-preset-btn").forEach(function(b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      $("entryHours").value = btn.dataset.hours;
+    });
+  });
+
+  $("entryHours").addEventListener("input", function() {
+    document.querySelectorAll(".hour-preset-btn").forEach(function(b) {
+      b.classList.toggle("active", b.dataset.hours === $("entryHours").value);
+    });
+  });
+
+  // Set default active preset
+  document.querySelector('.hour-preset-btn[data-hours="1"]').classList.add("active");
 
   setupLookup("entryClient", "clientDropdown", "clients");
   setupLookup("entryProject", "projectDropdown", "projects");
@@ -2003,6 +2056,48 @@ body.popup-mode .popup-open-app-btn { display: flex; }
   $("reportNextWeek").addEventListener("click", function() { state.reportWeekOffset++; state.reportShowAll = false; renderReport(); });
   $("reportAllToggle").addEventListener("click", function() { state.reportShowAll = !state.reportShowAll; renderReport(); });
 
+  $("toggleClientSummary").addEventListener("click", function() {
+    var div = $("clientSummary");
+    var isShown = div.style.display !== "none";
+    if (isShown) {
+      div.style.display = "none";
+      $("toggleClientSummary").classList.remove("btn-primary");
+      $("toggleClientSummary").classList.add("btn-secondary");
+    } else {
+      renderClientSummary();
+      div.style.display = "";
+      $("toggleClientSummary").classList.remove("btn-secondary");
+      $("toggleClientSummary").classList.add("btn-primary");
+    }
+  });
+
+  function renderClientSummary() {
+    var sorted = getReportEntries();
+    var clientMap = {};
+    var total = 0;
+    sorted.forEach(function(e) {
+      var c = e.client || "No Client";
+      if (!clientMap[c]) clientMap[c] = 0;
+      clientMap[c] += e.hours;
+      total += e.hours;
+    });
+
+    var clients = Object.keys(clientMap).sort(function(a,b) { return clientMap[b] - clientMap[a]; });
+    var html = '<div style="display:flex;flex-wrap:wrap;gap:10px;padding:4px 0;">';
+    clients.forEach(function(c) {
+      var hrs = clientMap[c];
+      var pct = total > 0 ? Math.round((hrs / total) * 100) : 0;
+      var color = getColor(c);
+      html += '<div style="background:' + color.bg + ';border:1px solid ' + color.dot + ';border-radius:var(--radius-md);padding:12px 18px;min-width:140px;">';
+      html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">' + colorDot(c) + '<span style="font-weight:600;font-size:13px;color:' + color.fg + ';">' + escHtml(c) + '</span></div>';
+      html += '<div style="font-size:22px;font-weight:700;color:' + color.dot + ';">' + hrs + 'h</div>';
+      html += '<div style="font-size:11px;color:var(--text-muted);">' + pct + '% of total</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    $("clientSummary").innerHTML = html;
+  }
+
   $("copyReport").addEventListener("click", function() {
     var sorted = getReportEntries();
     if (sorted.length === 0) { showToast("No entries to copy"); return; }
@@ -2039,6 +2134,57 @@ body.popup-mode .popup-open-app-btn { display: flex; }
       showToast("Copy failed - please select and copy manually");
     }
     document.body.removeChild(ta);
+  }
+
+  // Export Excel
+  $("exportXLSX").addEventListener("click", function() {
+    var sorted = getReportEntries();
+    if (sorted.length === 0) { showToast("No entries to export"); return; }
+
+    // Load SheetJS dynamically
+    if (typeof XLSX === "undefined") {
+      var script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+      script.onload = function() { doExcelExport(sorted); };
+      document.head.appendChild(script);
+    } else {
+      doExcelExport(sorted);
+    }
+  });
+
+  function doExcelExport(sorted) {
+    var rows = [["Date", "Client", "Project", "Task", "Inc/Task Description", "Hours"]];
+    var total = 0;
+    sorted.forEach(function(e) {
+      total += e.hours;
+      rows.push([formatDate(e.date), e.client||"", e.project||"", e.task||"", e.description||"", e.hours]);
+    });
+    rows.push(["", "", "", "", "Total", total]);
+
+    // Client summary sheet
+    var clientMap = {};
+    sorted.forEach(function(e) {
+      var c = e.client || "No Client";
+      if (!clientMap[c]) clientMap[c] = 0;
+      clientMap[c] += e.hours;
+    });
+    var summaryRows = [["Client", "Hours"]];
+    Object.keys(clientMap).sort().forEach(function(c) {
+      summaryRows.push([c, clientMap[c]]);
+    });
+    summaryRows.push(["Total", total]);
+
+    var wb = XLSX.utils.book_new();
+    var ws1 = XLSX.utils.aoa_to_sheet(rows);
+    ws1["!cols"] = [{wch:14},{wch:18},{wch:18},{wch:18},{wch:40},{wch:8}];
+    XLSX.utils.book_append_sheet(wb, ws1, "Entries");
+
+    var ws2 = XLSX.utils.aoa_to_sheet(summaryRows);
+    ws2["!cols"] = [{wch:20},{wch:10}];
+    XLSX.utils.book_append_sheet(wb, ws2, "By Client");
+
+    XLSX.writeFile(wb, "timesheet_" + getTodayStr() + ".xlsx");
+    showToast("Excel exported!");
   }
 
   $("exportCSV").addEventListener("click", function() {
@@ -2420,12 +2566,9 @@ body.popup-mode .popup-open-app-btn { display: flex; }
   $("viewToday").addEventListener("click", function() {
     state.dayOffset = 0;
     state.weekOffset = 0;
-    if (viewMode === "day") {
-      $("dayDatePicker").value = getTodayStr();
-      renderWeekly();
-    } else {
-      renderWeekly();
-    }
+    setViewMode("day");
+    $("dayDatePicker").value = getTodayStr();
+    renderWeekly();
   });
 
   $("dayDatePicker").addEventListener("change", function() {

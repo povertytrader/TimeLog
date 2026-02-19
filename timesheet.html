@@ -1803,7 +1803,7 @@ body.popup-mode .popup-open-app-btn { display: flex; }
     var clientColor = getColor(e.client);
     var label = escHtml(bubbleLabel(e));
     var projectHtml = e.project ? colorBadge(e.project) : '<span style="font-size:12px;">-</span>';
-    return '<div class="entry-bubble" style="border-left:3px solid ' + clientColor.dot + ';"><div class="entry-info"><div class="entry-task-label">' + colorDot(e.client) + label + '</div><div class="entry-details"><span class="entry-detail-item">&#128197; ' + formatDate(e.date) + '</span><span class="entry-detail-item">' + projectHtml + '</span>' + (e.description ? '<span class="entry-detail-item">&#128221; ' + escHtml(e.description.substring(0,30)) + '</span>' : '') + '</div></div><div class="entry-hours">' + e.hours + 'h</div><div class="entry-actions"><button class="entry-action-btn edit" data-id="' + e.id + '" title="Edit">&#9998;</button><button class="entry-action-btn delete" data-id="' + e.id + '" title="Delete">&#128465;</button></div></div>';
+    return '<div class="entry-bubble" style="border-left:3px solid ' + clientColor.dot + ';"><div class="entry-info"><div class="entry-task-label">' + colorDot(e.client) + label + '</div><div class="entry-details"><span class="entry-detail-item">&#128197; ' + formatDate(e.date) + '</span><span class="entry-detail-item">' + projectHtml + '</span>' + (e.task ? '<span class="entry-detail-item">&#9881; ' + escHtml(e.task) + '</span>' : '') + '</div></div><div class="entry-hours">' + e.hours + 'h</div><div class="entry-actions"><button class="entry-action-btn edit" data-id="' + e.id + '" title="Edit">&#9998;</button><button class="entry-action-btn delete" data-id="' + e.id + '" title="Delete">&#128465;</button></div></div>';
   }
 
   function escHtml(str) {

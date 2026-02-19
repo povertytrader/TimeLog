@@ -1,0 +1,12 @@
+Windows Registry Editor Version 5.00
+
+; Timesheet Pro - Right-click context menu integration
+; Replace YOUR_URL_HERE with your actual hosted URL (e.g., https://yourdomain.com/timesheet.html)
+; This adds "Create Timesheet Entry" to the right-click context menu for all files
+
+[HKEY_CLASSES_ROOT\*\shell\TimesheetPro]
+@="Create Timesheet Entry"
+"Icon"="chrome.exe"
+
+[HKEY_CLASSES_ROOT\*\shell\TimesheetPro\command]
+@="\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" \"--app=YOUR_URL_HERE?task=%1\""

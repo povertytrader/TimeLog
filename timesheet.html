@@ -1,0 +1,2491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TimeLog</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4A8C7E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%234A8C7E'/%3E%3Cstop offset='100%25' stop-color='%233D7A8C'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23g)'/%3E%3Ctext x='50' y='68' text-anchor='middle' font-size='50' fill='white'%3E%E2%8C%9A%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #F4F1EC;
+  --bg-secondary: #EAE5DE;
+  --bg-card: #FDFBF8;
+  --bg-input: #EEEBE5;
+  --bg-hover: #E3DED6;
+  --text-primary: #2E3338;
+  --text-secondary: #5F6B72;
+  --text-muted: #95A0A8;
+  --accent: #4A8C7E;
+  --accent-hover: #3B7568;
+  --accent-light: rgba(74,140,126,0.12);
+  --accent-lighter: rgba(74,140,126,0.05);
+  --accent2: #C27C4E;
+  --accent2-light: rgba(194,124,78,0.12);
+  --accent3: #7B6BA8;
+  --accent3-light: rgba(123,107,168,0.12);
+  --border: #DCD6CD;
+  --border-light: #E8E3DB;
+  --success: #5A9E6F;
+  --danger: #C46B65;
+  --danger-hover: #B35A54;
+  --warning: #D4A84E;
+  --shadow-sm: 0 1px 3px rgba(46,51,56,0.06);
+  --shadow-md: 0 4px 14px rgba(46,51,56,0.08);
+  --shadow-lg: 0 8px 28px rgba(46,51,56,0.1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --font-display: 'Outfit', -apple-system, sans-serif;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+  --transition: 0.2s ease;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #1E2326;
+  --bg-secondary: #262C30;
+  --bg-card: #2C3338;
+  --bg-input: #2C3338;
+  --bg-hover: #353D42;
+  --text-primary: #E2E6E9;
+  --text-secondary: #9DAAB2;
+  --text-muted: #6D7A82;
+  --accent: #5EBAA8;
+  --accent-hover: #72CCBA;
+  --accent-light: rgba(94,186,168,0.15);
+  --accent-lighter: rgba(94,186,168,0.06);
+  --accent2: #D9956A;
+  --accent2-light: rgba(217,149,106,0.15);
+  --accent3: #9B8AC8;
+  --accent3-light: rgba(155,138,200,0.15);
+  --border: #3A4248;
+  --border-light: #353D42;
+  --success: #6DB880;
+  --danger: #D48480;
+  --danger-hover: #C47470;
+  --warning: #DDB85E;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.25);
+  --shadow-md: 0 4px 14px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 28px rgba(0,0,0,0.35);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: background var(--transition), color var(--transition);
+}
+
+.app-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--accent), #3D7A8C);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.app-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.app-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+
+.icon-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.icon-btn.active {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-secondary);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  margin-bottom: 28px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+
+.tab:hover { color: var(--text-primary); background: var(--bg-hover); }
+
+.tab.active {
+  background: var(--bg-card);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.form-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.form-group { position: relative; }
+.form-group.full-width { grid-column: 1 / -1; }
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  outline: none;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.form-textarea { resize: vertical; min-height: 70px; }
+
+.form-select { cursor: pointer; }
+
+.lookup-wrapper { position: relative; }
+
+.lookup-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+}
+
+.lookup-dropdown.show { display: block; }
+
+.lookup-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-primary);
+  transition: background var(--transition);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.lookup-item:last-child { border-bottom: none; }
+.lookup-item:hover { background: var(--accent-light); }
+
+.lookup-item .lookup-item-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.lookup-add {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  border-top: 1px solid var(--border);
+  transition: background var(--transition);
+}
+
+.lookup-add:hover { background: var(--accent-lighter); }
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.btn {
+  padding: 11px 24px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #3D7A8C);
+  color: white;
+}
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+.btn-secondary {
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+.btn-danger:hover { background: var(--danger-hover); }
+
+.btn-sm { padding: 7px 14px; font-size: 13px; }
+
+.entries-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.entries-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.entries-summary {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.entries-summary strong {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.weekly-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sort-controls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.sort-btn {
+  padding: 5px 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.sort-btn:hover { border-color: var(--accent); color: var(--accent); }
+.sort-btn.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+.entry-bubble {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.entry-bubble:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+.entry-info { flex: 1; min-width: 0; }
+
+.entry-task-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+}
+
+.entry-details {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  display: flex;
+  gap: 12px;
+}
+
+.entry-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.entry-hours {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+  margin-left: 16px;
+  background: var(--accent-light);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.entry-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: 12px;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.entry-bubble:hover .entry-actions { opacity: 1; }
+
+.entry-action-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: var(--bg-input);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+
+.entry-action-btn:hover { background: var(--accent-light); color: var(--accent); }
+.entry-action-btn.delete:hover { background: rgba(196,112,107,0.12); color: var(--danger); }
+
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state-title { font-size: 16px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+.empty-state-text { font-size: 13px; }
+
+.day-group { margin-bottom: 20px; }
+
+.day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  margin-bottom: 6px;
+}
+
+.day-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.day-total {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent2);
+}
+
+.report-table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.report-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.report-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.report-table tr:last-child td { border-bottom: none; }
+.report-table tr:hover td { background: var(--accent-lighter); }
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(61,50,41,0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.15s ease;
+}
+
+[data-theme="dark"] .modal-overlay {
+  background: rgba(0,0,0,0.6);
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  width: 90%;
+  max-width: 440px;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 0.2s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.modal-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  z-index: 2000;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+.install-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.install-step {
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.install-step:last-child { border-bottom: none; }
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--accent), #3D7A8C);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-content { flex: 1; }
+
+.step-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.step-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.kbd {
+  display: inline-block;
+  padding: 2px 8px;
+  font-family: monospace;
+  font-size: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+}
+
+.manage-section { margin-top: 24px; }
+
+.manage-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.chip-remove {
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: var(--bg-hover);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+
+.chip-remove:hover { background: var(--danger); color: white; }
+
+.inline-add {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.inline-add .form-input { flex: 1; }
+
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.week-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 200px;
+  text-align: center;
+}
+
+.context-info {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: var(--accent-lighter);
+  border: 1px solid var(--accent-light);
+  border-radius: var(--radius-md);
+}
+
+.context-info-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.context-info-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.stats-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  flex: 1;
+  padding: 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card:nth-child(1) { border-left: 3px solid var(--accent); }
+.stat-card:nth-child(2) { border-left: 3px solid var(--accent2); }
+.stat-card:nth-child(3) { border-left: 3px solid var(--accent3); }
+
+.stat-card:nth-child(1) .stat-value { color: var(--accent); }
+.stat-card:nth-child(2) .stat-value { color: var(--accent2); }
+.stat-card:nth-child(3) .stat-value { color: var(--accent3); }
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  margin-top: 4px;
+  font-family: var(--font-body);
+  letter-spacing: -0.5px;
+}
+
+.stat-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.stat-unit {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.holiday-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.holiday-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.holiday-item:last-child { border-bottom: none; }
+
+.holiday-name {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.holiday-date {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.holiday-region {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.holiday-region.usa {
+  background: rgba(78,145,194,0.14);
+  color: #3A6FA0;
+}
+
+.holiday-region.emea {
+  background: rgba(194,124,78,0.14);
+  color: #A0603A;
+}
+
+@media (max-width: 700px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .stats-row { flex-direction: column; }
+  .app-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .entry-actions { opacity: 1; }
+}
+
+body.popup-mode .app-container {
+  max-width: 480px;
+  padding: 16px;
+}
+
+body.popup-mode .app-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+}
+
+body.popup-mode .app-subtitle { display: none; }
+body.popup-mode .tabs { display: none; }
+body.popup-mode .stats-row { display: none; }
+body.popup-mode #tab-entry { display: block !important; }
+
+body.popup-mode .form-card {
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+body.popup-mode .form-grid {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+body.popup-mode .popup-source {
+  display: block;
+  padding: 10px 14px;
+  background: var(--accent-light);
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-height: 80px;
+  overflow-y: auto;
+  border-left: 3px solid var(--accent);
+}
+
+body.popup-mode .popup-source-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.popup-source { display: none; }
+
+body.popup-mode .popup-close-msg {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.popup-close-msg { display: none; }
+
+/* Recent entries in New Entry tab */
+.recent-entries-section {
+  margin-top: 24px;
+}
+.recent-entries-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.recent-entries-title span {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 400;
+  font-family: var(--font-body);
+}
+
+/* Day/Week toggle in weekly tab */
+.view-mode-toggle {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.view-mode-btn {
+  padding: 7px 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+.view-mode-btn:hover { border-color: var(--accent); color: var(--accent); }
+.view-mode-btn.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.view-mode-btn.today-btn { background: var(--accent); color: white; border-color: var(--accent); }
+.view-mode-btn.today-btn:hover { background: var(--accent-hover); }
+
+.day-date-input {
+  padding: 7px 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: all var(--transition);
+}
+.day-date-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+
+/* Popup open-app button */
+.popup-open-app-btn {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--accent-light);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  font-family: var(--font-body);
+}
+.popup-open-app-btn:hover { background: var(--accent); color: white; }
+body.popup-mode .popup-open-app-btn { display: flex; }
+</style>
+</head>
+<body>
+<div class="app-container">
+  <header class="app-header">
+    <div class="app-logo">
+      <div class="logo-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="8.5"/><line x1="12" y1="9" x2="12" y2="13.5"/><line x1="12" y1="13.5" x2="15" y2="13.5"/><line x1="10" y1="2" x2="14" y2="2"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="18.5" y1="6.5" x2="20" y2="5"/></svg></div>
+      <div>
+        <div class="app-title">TimeLog</div>
+        <div class="app-subtitle">Simple and direct time tracking</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="popup-open-app-btn" id="openAppBtn" title="Open full app">&#10064; Open App</button>
+      <button class="icon-btn" id="refreshBtn" title="Refresh data">&#8635;</button>
+      <button class="icon-btn" id="themeToggle" title="Toggle dark mode">&#9789;</button>
+      <button class="icon-btn" id="installGuideBtn" title="Install as App">&#10515;</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="entry">New Entry</button>
+    <button class="tab" data-tab="weekly">Weekly/Daily View</button>
+    <button class="tab" data-tab="report">Report</button>
+    <button class="tab" data-tab="manage">Manage</button>
+    <button class="tab" data-tab="install">Install</button>
+  </div>
+
+  <div id="tab-entry" class="tab-content active">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Today</div>
+        <div class="stat-value" id="statToday">0h</div>
+        <div class="stat-sub" id="statTodayEntries">0 entries</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This Week</div>
+        <div class="stat-value" id="statWeek">0h</div>
+        <div class="stat-sub" id="statWeekEntries">0 entries</div>
+      </div>
+      <div class="stat-card" style="cursor: pointer;" id="holidayCard" title="Click to view all holidays on Nager.Date">
+        <div class="stat-label">Upcoming Holidays</div>
+        <ul class="holiday-list" id="holidayList"></ul>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="popup-source" id="popupSource">
+        <div class="popup-source-label">Captured text</div>
+        <div id="popupSourceText"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-input" id="entryDate">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hours</label>
+          <input type="number" class="form-input" id="entryHours" min="0.25" max="24" step="0.25" value="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Client</label>
+          <div class="lookup-wrapper">
+            <input type="text" class="form-input" id="entryClient" placeholder="Search or add client..." autocomplete="off">
+            <div class="lookup-dropdown" id="clientDropdown"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Project</label>
+          <div class="lookup-wrapper">
+            <input type="text" class="form-input" id="entryProject" placeholder="Search or add project..." autocomplete="off">
+            <div class="lookup-dropdown" id="projectDropdown"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Task</label>
+          <div class="lookup-wrapper">
+            <input type="text" class="form-input" id="entryTask" placeholder="Search or add task..." autocomplete="off">
+            <div class="lookup-dropdown" id="taskDropdown"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Inc/Task Description</label>
+          <input type="text" class="form-input" id="entryDescription" placeholder="Detailed description...">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="saveCloseEntry" style="display:none;">&#10003; Save &amp; Close</button>
+        <button class="btn btn-primary" id="saveEntry">&#10003; Save Entry</button>
+        <button class="btn btn-secondary" id="resetForm">&#8634; Reset</button>
+      </div>
+      <div class="popup-close-msg">Entry saved! You can close this window or add another.</div>
+    </div>
+    <div class="recent-entries-section" id="recentEntriesSection">
+      <div class="recent-entries-title">Recent Entries <span>(last 6)</span></div>
+      <div id="recentEntriesList"></div>
+    </div>
+  </div>
+
+  <div id="tab-weekly" class="tab-content">
+    <div class="view-mode-toggle">
+      <button class="view-mode-btn active" id="viewModeWeek">Week</button>
+      <button class="view-mode-btn" id="viewModeDay">Day</button>
+      <button class="view-mode-btn today-btn" id="viewToday">Today</button>
+      <input type="date" class="day-date-input" id="dayDatePicker" style="display:none;">
+    </div>
+    <div class="week-nav" id="weekNavBar">
+      <button class="btn btn-secondary btn-sm" id="prevWeek">&#8592; Prev</button>
+      <div class="week-label" id="weekLabel"></div>
+      <button class="btn btn-secondary btn-sm" id="nextWeek">Next &#8594;</button>
+    </div>
+    <div class="week-nav" id="dayNavBar" style="display:none;">
+      <button class="btn btn-secondary btn-sm" id="prevDay">&#8592; Prev</button>
+      <div class="week-label" id="dayLabel"></div>
+      <button class="btn btn-secondary btn-sm" id="nextDay">Next &#8594;</button>
+    </div>
+    <div class="weekly-header">
+      <div class="entries-title" id="weeklyTitle">This Week</div>
+      <div class="sort-controls">
+        <span>Sort:</span>
+        <button class="sort-btn active" data-sort="date">Date</button>
+        <button class="sort-btn" data-sort="client">Client</button>
+        <button class="sort-btn" data-sort="hours">Hours</button>
+        <button class="sort-btn" data-sort="task">Task</button>
+      </div>
+    </div>
+    <div class="entries-summary">Total: <strong id="weeklyTotal">0h</strong></div>
+    <div id="weeklyEntries" style="margin-top: 14px;"></div>
+  </div>
+
+  <div id="tab-report" class="tab-content">
+    <div class="entries-header">
+      <div class="entries-title">Entries Report</div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-secondary btn-sm" id="copyReport">&#128203; Copy to Clipboard</button>
+        <button class="btn btn-secondary btn-sm" id="exportCSV">&#8681; Export CSV</button>
+      </div>
+    </div>
+    <div class="week-nav" style="margin-bottom: 12px;">
+      <button class="btn btn-secondary btn-sm" id="reportPrevWeek">&#8592; Prev</button>
+      <div class="week-label" id="reportWeekLabel"></div>
+      <button class="btn btn-secondary btn-sm" id="reportNextWeek">Next &#8594;</button>
+      <button class="btn btn-sm" id="reportAllToggle" style="margin-left: 8px;">All Entries</button>
+    </div>
+    <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center;">
+      <div style="flex: 1; min-width: 200px; position: relative;">
+        <input type="text" class="form-input" id="reportSearch" placeholder="&#128269; Search entries..." style="padding-left: 14px;">
+      </div>
+      <select class="form-select" id="filterClient" style="width: auto; min-width: 140px;">
+        <option value="">All Clients</option>
+      </select>
+      <select class="form-select" id="filterProject" style="width: auto; min-width: 140px;">
+        <option value="">All Projects</option>
+      </select>
+      <select class="form-select" id="filterTask" style="width: auto; min-width: 140px;">
+        <option value="">All Tasks</option>
+      </select>
+      <button class="btn btn-secondary btn-sm" id="clearFilters" style="white-space: nowrap;">&#10005; Clear</button>
+    </div>
+    <div class="form-card" style="padding: 0; overflow: hidden;">
+      <div class="report-table-wrapper">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Client</th>
+              <th>Project</th>
+              <th>Task</th>
+              <th>Inc/Task Description</th>
+              <th>Hours</th>
+            </tr>
+          </thead>
+          <tbody id="reportBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="entries-summary" style="margin-top: 8px; display: flex; gap: 16px; align-items: center;">
+      <span>Total: <strong id="reportTotal">0h</strong></span>
+      <span id="reportCount" style="font-size: 12px; color: var(--text-muted);"></span>
+    </div>
+  </div>
+
+  <div id="tab-manage" class="tab-content">
+    <div class="manage-section">
+      <div class="manage-title">Clients</div>
+      <div class="inline-add">
+        <input type="text" class="form-input" id="newClientInput" placeholder="Add new client...">
+        <button class="btn btn-primary btn-sm" id="addClientBtn">+ Add</button>
+      </div>
+      <div class="chip-list" id="clientChips"></div>
+    </div>
+
+    <div class="manage-section">
+      <div class="manage-title">Projects</div>
+      <div class="inline-add">
+        <input type="text" class="form-input" id="newProjectInput" placeholder="Add new project...">
+        <button class="btn btn-primary btn-sm" id="addProjectBtn">+ Add</button>
+      </div>
+      <div class="chip-list" id="projectChips"></div>
+    </div>
+
+    <div class="manage-section">
+      <div class="manage-title">Tasks</div>
+      <div class="inline-add">
+        <input type="text" class="form-input" id="newTaskInput" placeholder="Add new task...">
+        <button class="btn btn-primary btn-sm" id="addTaskBtn">+ Add</button>
+      </div>
+      <div class="chip-list" id="taskChips"></div>
+    </div>
+
+    <div class="manage-section" style="margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border);">
+      <div class="manage-title">Data Management</div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn btn-secondary btn-sm" id="exportData">&#128190; Export All Data</button>
+        <button class="btn btn-secondary btn-sm" id="importData">&#128194; Import Data</button>
+        <button class="btn btn-danger btn-sm" id="clearAll">&#128465; Clear All Data</button>
+      </div>
+      <input type="file" id="importFile" accept=".json" style="display:none;">
+    </div>
+  </div>
+
+  <div id="tab-install" class="tab-content">
+    <div class="install-section">
+      <div class="manage-title" style="margin-bottom: 4px;">Install TimeLog as a Desktop App</div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">Follow these steps to install this app so it appears on your desktop and taskbar, just like a native application.</p>
+
+      <div class="install-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <div class="step-title">Open in a supported browser</div>
+          <div class="step-desc">Use <strong>Google Chrome</strong> or <strong>Microsoft Edge</strong> to open this page. Firefox does not support PWA installation.</div>
+        </div>
+      </div>
+
+      <div class="install-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <div class="step-title">Trigger the install prompt</div>
+          <div class="step-desc">
+            <strong>Chrome:</strong> Click the install icon (monitor with arrow) in the address bar, or go to Menu (three dots) and select "Install TimeLog..."<br>
+            <strong>Edge:</strong> Click the app icon in the address bar, or Menu > Apps > Install this site as an app.
+          </div>
+        </div>
+      </div>
+
+      <div class="install-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <div class="step-title">Confirm installation</div>
+          <div class="step-desc">A dialog will appear. Click <strong>"Install"</strong>. The app will open in its own window without browser chrome.</div>
+        </div>
+      </div>
+
+      <div class="install-step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <div class="step-title">Pin to Taskbar / Desktop shortcut</div>
+          <div class="step-desc">
+            After installation, the app appears in your Start menu. To add to desktop:<br>
+            <strong>Windows:</strong> Search "TimeLog" in Start > Right-click > "Open file location" > Copy the shortcut to your Desktop. Or right-click the taskbar icon > "Pin to taskbar".<br>
+            <strong>macOS:</strong> The app appears in your Applications / Chrome Apps folder. Drag it to your Dock.
+          </div>
+        </div>
+      </div>
+
+      <div class="install-step">
+        <div class="step-number">5</div>
+        <div class="step-content">
+          <div class="step-title">Auto-launch on startup (optional)</div>
+          <div class="step-desc">
+            <strong>Windows:</strong> Press <span class="kbd">Win + R</span>, type <span class="kbd">shell:startup</span>, press Enter. Copy your TimeLog shortcut into that folder. It will now launch automatically when your computer starts.<br>
+            <strong>macOS:</strong> System Preferences > Users & Groups > Login Items > Add TimeLog.
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <button class="btn btn-primary" id="installPWABtn">&#10515; Install App Now</button>
+        <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;" id="installStatus">If the button doesn't work, use the browser method described in Step 2.</p>
+      </div>
+
+      <div class="context-info" style="margin-top: 24px;">
+        <div class="context-info-title">Quick Entry Shortcut (Ctrl+Alt+T)</div>
+        <div class="context-info-text" style="margin-bottom: 14px;">
+          Select text anywhere (Outlook, Teams, browser), press your shortcut, and a popup opens to log a timesheet entry instantly. Requires <a href="https://www.autohotkey.com" target="_blank" style="color: var(--accent); font-weight: 600;">AutoHotkey v2</a> (free, 30-second install).
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="form-label">Configure your shortcut</label>
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;">
+              <input type="checkbox" id="modCtrl" checked> Ctrl
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;">
+              <input type="checkbox" id="modAlt" checked> Alt
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;">
+              <input type="checkbox" id="modShift"> Shift
+            </label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:6px;">
+              <input type="checkbox" id="modWin"> Win
+            </label>
+            <span style="font-size: 14px; color: var(--text-muted); margin: 0 4px;">+</span>
+            <select class="form-select" id="hotkeyLetter" style="width: 70px; padding: 6px 10px;">
+              <option value="t">T</option>
+              <option value="e">E</option>
+              <option value="q">Q</option>
+              <option value="j">J</option>
+              <option value="l">L</option>
+              <option value="n">N</option>
+              <option value="y">Y</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="F1">F1</option>
+              <option value="F2">F2</option>
+              <option value="F9">F9</option>
+              <option value="F10">F10</option>
+              <option value="F12">F12</option>
+            </select>
+          </div>
+          <div style="margin-top: 10px; font-size: 14px;">
+            Your shortcut: <strong id="hotkeyPreview" style="color: var(--accent); font-size: 15px;">Ctrl + Alt + T</strong>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label class="form-label">App URL</label>
+          <input type="text" class="form-input" id="ahkAppUrl" value="http://localhost:8080/timesheet.html" style="font-size: 13px;">
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">The URL where your TimeLog is running</div>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <button class="btn btn-primary btn-sm" id="downloadAhk">&#10515; Download Shortcut Script (.ahk)</button>
+          <span style="font-size: 12px; color: var(--text-muted);">Double-click to run, put in shell:startup to auto-start</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="resetModal">
+  <div class="modal">
+    <div class="modal-title">Reset Form?</div>
+    <div class="modal-text">This will clear all fields in the entry form. Your saved entries will not be affected.</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-sm" id="resetCancel">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="resetConfirm">Reset</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="clearModal">
+  <div class="modal">
+    <div class="modal-title">Clear All Data?</div>
+    <div class="modal-text">This will permanently delete all entries, clients, projects, and tasks. This action cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-sm" id="clearCancel">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="clearConfirm">Delete Everything</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <div class="modal-title">Delete Entry?</div>
+    <div class="modal-text">Are you sure you want to delete this timesheet entry?</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary btn-sm" id="deleteCancel">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="deleteConfirm">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function() {
+  var STATE_KEY = "timesheet_pro_state";
+
+  var defaultState = {
+    entries: [],
+    clients: ["Acme Corp", "TechStart", "GlobalFin"],
+    projects: ["Website Redesign", "Mobile App", "API Integration", "Maintenance"],
+    tasks: ["Development", "Design", "Testing", "Meeting", "Documentation", "Code Review"],
+    theme: "light",
+    weekOffset: 0,
+    dayOffset: 0,
+    viewMode: "week",
+    sortBy: "date",
+    editingId: null,
+    reportWeekOffset: 0,
+    reportShowAll: false
+  };
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STATE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        for (var key in defaultState) {
+          if (parsed[key] === undefined) parsed[key] = defaultState[key];
+        }
+        return parsed;
+      }
+    } catch(e) {}
+    return JSON.parse(JSON.stringify(defaultState));
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STATE_KEY, JSON.stringify(state));
+    } catch(e) {}
+  }
+
+  var state = loadState();
+
+  function $(id) { return document.getElementById(id); }
+  function $$(sel) { return document.querySelectorAll(sel); }
+
+  function showToast(msg) {
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(function() { t.classList.remove("show"); }, 2500);
+  }
+
+  function showModal(id) { $(id).classList.add("show"); }
+  function hideModal(id) { $(id).classList.remove("show"); }
+
+  function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
+
+  function formatDate(dateStr) {
+    var d = new Date(dateStr + "T00:00:00");
+    var days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return days[d.getDay()] + ", " + months[d.getMonth()] + " " + d.getDate();
+  }
+
+  function getWeekRange(offset) {
+    var now = new Date();
+    var day = now.getDay();
+    var diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    var monday = new Date(now.getFullYear(), now.getMonth(), diff + (offset * 7));
+    var sunday = new Date(monday);
+    sunday.setDate(sunday.getDate() + 6);
+    return { start: monday, end: sunday };
+  }
+
+  function dateToStr(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var dd = String(d.getDate()).padStart(2, "0");
+    return y + "-" + m + "-" + dd;
+  }
+
+  function getTodayStr() { return dateToStr(new Date()); }
+
+  function getMonthRange() {
+    var now = new Date();
+    var start = new Date(now.getFullYear(), now.getMonth(), 1);
+    var end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    return { start: dateToStr(start), end: dateToStr(end) };
+  }
+
+  function bubbleLabel(entry) {
+    var client = entry.client || "No Client";
+    var desc = entry.description || entry.task || "";
+    var truncated = desc.length > 35 ? desc.substring(0, 35) + "…" : desc;
+    return client + "." + truncated;
+  }
+
+  function applyTheme() {
+    document.documentElement.setAttribute("data-theme", state.theme);
+    var btn = $("themeToggle");
+    btn.textContent = state.theme === "dark" ? "\u2600" : "\u263D";
+    btn.classList.toggle("active", state.theme === "dark");
+  }
+
+  $("themeToggle").addEventListener("click", function() {
+    state.theme = state.theme === "dark" ? "light" : "dark";
+    applyTheme();
+    saveState();
+  });
+
+  $$(".tab").forEach(function(tab) {
+    tab.addEventListener("click", function() {
+      $$(".tab").forEach(function(t) { t.classList.remove("active"); });
+      $$(".tab-content").forEach(function(c) { c.classList.remove("active"); });
+      tab.classList.add("active");
+      $("tab-" + tab.dataset.tab).classList.add("active");
+    });
+  });
+
+  $("entryDate").value = getTodayStr();
+
+  function setupLookup(inputId, dropdownId, listKey) {
+    var input = $(inputId);
+    var dropdown = $(dropdownId);
+    var useColor = (listKey === "clients" || listKey === "projects");
+
+    input.addEventListener("focus", function() { renderDropdown(""); });
+    input.addEventListener("input", function() { renderDropdown(input.value); });
+
+    function renderDropdown(query) {
+      var items = state[listKey];
+      var filtered = items.filter(function(item) {
+        return item.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+      });
+      var html = "";
+      filtered.forEach(function(item) {
+        var dot = useColor ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + getColor(item).dot + ';margin-right:8px;"></span>' : "";
+        html += '<div class="lookup-item" data-value="' + item.replace(/"/g, "&quot;") + '">' + dot + item + '</div>';
+      });
+      if (query.trim() && filtered.indexOf(query.trim()) === -1) {
+        html += '<div class="lookup-add" data-new="' + query.trim().replace(/"/g, "&quot;") + '">+ Add "' + query.trim() + '"</div>';
+      }
+      dropdown.innerHTML = html;
+      dropdown.classList.add("show");
+
+      dropdown.querySelectorAll(".lookup-item").forEach(function(el) {
+        el.addEventListener("mousedown", function(e) {
+          e.preventDefault();
+          input.value = el.dataset.value;
+          dropdown.classList.remove("show");
+        });
+      });
+
+      var addEl = dropdown.querySelector(".lookup-add");
+      if (addEl) {
+        addEl.addEventListener("mousedown", function(e) {
+          e.preventDefault();
+          var val = addEl.dataset.new;
+          if (state[listKey].indexOf(val) === -1) {
+            state[listKey].push(val);
+            saveState();
+          }
+          input.value = val;
+          dropdown.classList.remove("show");
+          renderManage();
+        });
+      }
+    }
+
+    input.addEventListener("blur", function() {
+      setTimeout(function() { dropdown.classList.remove("show"); }, 150);
+    });
+  }
+
+  setupLookup("entryClient", "clientDropdown", "clients");
+  setupLookup("entryProject", "projectDropdown", "projects");
+  setupLookup("entryTask", "taskDropdown", "tasks");
+
+  function doSave(closeAfter) {
+    var date = $("entryDate").value;
+    var hours = parseFloat($("entryHours").value);
+    var client = $("entryClient").value.trim();
+    var project = $("entryProject").value.trim();
+    var task = $("entryTask").value.trim();
+    var desc = $("entryDescription").value.trim();
+
+    if (!date) { showToast("Please select a date"); return false; }
+    if (!hours || hours <= 0) { showToast("Please enter valid hours"); return false; }
+    if (!client) { showToast("Please enter a client"); return false; }
+    if (isPopup && !project) { showToast("Please enter a project"); return false; }
+    if (isPopup && !task) { showToast("Please enter a task"); return false; }
+    if (isPopup && !desc) { showToast("Please enter a task description"); return false; }
+
+    if (state.editingId) {
+      var idx = state.entries.findIndex(function(e) { return e.id === state.editingId; });
+      if (idx !== -1) {
+        state.entries[idx] = { id: state.editingId, date: date, hours: hours, client: client, project: project, task: task, description: desc };
+      }
+      state.editingId = null;
+      $("saveEntry").innerHTML = "&#10003; Save Entry";
+      showToast("Entry updated!");
+    } else {
+      state.entries.push({ id: genId(), date: date, hours: hours, client: client, project: project, task: task, description: desc });
+      showToast("Entry saved!");
+    }
+
+    if (client && state.clients.indexOf(client) === -1) { state.clients.push(client); }
+    if (project && state.projects.indexOf(project) === -1) { state.projects.push(project); }
+    if (task && state.tasks.indexOf(task) === -1) { state.tasks.push(task); }
+
+    saveState();
+    clearForm();
+    renderAll();
+    return true;
+  }
+
+  $("saveEntry").addEventListener("click", function() {
+    var saved = doSave(false);
+    if (saved && isPopup) {
+      $("saveEntry").innerHTML = "&#10003; Saved!";
+      $("saveEntry").style.background = "var(--success)";
+      setTimeout(function() {
+        $("saveEntry").innerHTML = "&#10003; Save Entry";
+        $("saveEntry").style.background = "";
+      }, 1500);
+    }
+  });
+
+  $("saveCloseEntry").addEventListener("click", function() {
+    var saved = doSave(true);
+    if (saved && isPopup) {
+      $("saveCloseEntry").innerHTML = "&#10003; Saved!";
+      $("saveCloseEntry").style.background = "var(--success)";
+      $("saveCloseEntry").style.color = "white";
+      setTimeout(function() { window.close(); }, 1000);
+    }
+  });
+
+  function clearForm() {
+    $("entryDate").value = getTodayStr();
+    $("entryHours").value = "1";
+    $("entryClient").value = "";
+    $("entryProject").value = "";
+    $("entryTask").value = "";
+    $("entryDescription").value = "";
+    state.editingId = null;
+    $("saveEntry").innerHTML = "&#10003; Save Entry";
+  }
+
+  $("resetForm").addEventListener("click", function() { showModal("resetModal"); });
+  $("resetCancel").addEventListener("click", function() { hideModal("resetModal"); });
+  $("resetConfirm").addEventListener("click", function() {
+    hideModal("resetModal");
+    clearForm();
+    showToast("Form reset");
+  });
+
+  function updateStats() {
+    var today = getTodayStr();
+    var week = getWeekRange(0);
+    var weekStart = dateToStr(week.start);
+    var weekEnd = dateToStr(week.end);
+
+    var todayH = 0, todayC = 0, weekH = 0, weekC = 0;
+    state.entries.forEach(function(e) {
+      if (e.date === today) { todayH += e.hours; todayC++; }
+      if (e.date >= weekStart && e.date <= weekEnd) { weekH += e.hours; weekC++; }
+    });
+
+    $("statToday").innerHTML = todayH + '<span class="stat-unit"> hours</span>';
+    $("statTodayEntries").textContent = todayC + " entries";
+    $("statWeek").innerHTML = weekH + '<span class="stat-unit"> hours</span>';
+    $("statWeekEntries").textContent = weekC + " entries";
+
+    renderHolidays();
+  }
+
+  $("holidayCard").addEventListener("click", function() {
+    window.open("https://date.nager.at/", "_blank");
+  });
+
+  var HOLIDAY_COUNTRIES = [
+    {code: "US", region: "usa", label: "USA"},
+    {code: "DE", region: "emea", label: "EMEA"}
+  ];
+
+  var cachedHolidays = null;
+
+  function fetchHolidays(callback) {
+    if (cachedHolidays) { callback(cachedHolidays); return; }
+
+    var year = new Date().getFullYear();
+    var results = [];
+    var done = 0;
+
+    HOLIDAY_COUNTRIES.forEach(function(country) {
+      var url = "https://date.nager.at/api/v3/publicholidays/" + year + "/" + country.code;
+      fetch(url).then(function(r) {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      }).then(function(data) {
+        if (Array.isArray(data)) {
+          data.forEach(function(h) {
+            results.push({
+              date: h.date,
+              name: h.name,
+              region: country.region,
+              label: country.label,
+              countryCode: country.code
+            });
+          });
+        }
+        done++;
+        if (done === HOLIDAY_COUNTRIES.length) {
+          results.sort(function(a,b) { return a.date.localeCompare(b.date); });
+          cachedHolidays = results;
+          callback(results);
+        }
+      }).catch(function(err) {
+        done++;
+        if (done === HOLIDAY_COUNTRIES.length) {
+          if (results.length > 0) {
+            results.sort(function(a,b) { return a.date.localeCompare(b.date); });
+            cachedHolidays = results;
+            callback(results);
+          } else {
+            callback(null);
+          }
+        }
+      });
+    });
+  }
+
+  function renderHolidays() {
+    $("holidayList").innerHTML = '<li style="font-size:12px;color:var(--text-muted);padding:8px 0;">Loading holidays...</li>';
+
+    fetchHolidays(function(holidays) {
+      if (!holidays || holidays.length === 0) {
+        $("holidayList").innerHTML = '<li style="font-size:12px;color:var(--text-muted);padding:8px 0;">Could not load holidays. <a href="https://date.nager.at/" target="_blank" style="color:var(--accent);">View on Nager.Date</a></li>';
+        return;
+      }
+
+      var today = getTodayStr();
+      var upcoming = holidays.filter(function(h) { return h.date >= today; }).slice(0, 4);
+      var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+      if (upcoming.length === 0) {
+        $("holidayList").innerHTML = '<li style="font-size:12px;color:var(--text-muted);padding:8px 0;">No more holidays this year</li>';
+        return;
+      }
+
+      var html = "";
+      upcoming.forEach(function(h) {
+        var d = new Date(h.date + "T00:00:00");
+        var dateStr = months[d.getMonth()] + " " + d.getDate();
+        html += '<li class="holiday-item"><span class="holiday-name">' + h.name + '</span><span style="display:flex;align-items:center;gap:6px;"><span class="holiday-region ' + h.region + '">' + h.label + '</span><span class="holiday-date">' + dateStr + '</span></span></li>';
+      });
+      $("holidayList").innerHTML = html;
+    });
+  }
+
+  function renderWeekly() {
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var filtered;
+
+    if (viewMode === "day") {
+      var dayStr = getDayStr(state.dayOffset);
+      $("dayLabel").textContent = formatDate(dayStr) + ", " + new Date(dayStr + "T00:00:00").getFullYear();
+      if ($("dayDatePicker").value !== dayStr) $("dayDatePicker").value = dayStr;
+      filtered = state.entries.filter(function(e) { return e.date === dayStr; });
+    } else {
+      var range = getWeekRange(state.weekOffset);
+      var startStr = dateToStr(range.start);
+      var endStr = dateToStr(range.end);
+      $("weekLabel").textContent = months[range.start.getMonth()] + " " + range.start.getDate() + " - " + months[range.end.getMonth()] + " " + range.end.getDate() + ", " + range.end.getFullYear();
+      filtered = state.entries.filter(function(e) { return e.date >= startStr && e.date <= endStr; });
+    }
+
+    var sortFn;
+    switch(state.sortBy) {
+      case "client": sortFn = function(a,b) { return (a.client||"").localeCompare(b.client||""); }; break;
+      case "hours": sortFn = function(a,b) { return b.hours - a.hours; }; break;
+      case "task": sortFn = function(a,b) { return (a.task||"").localeCompare(b.task||""); }; break;
+      default: sortFn = function(a,b) { return a.date.localeCompare(b.date); };
+    }
+    filtered.sort(sortFn);
+
+    var total = 0;
+    filtered.forEach(function(e) { total += e.hours; });
+    $("weeklyTotal").textContent = total + "h";
+
+    if (state.sortBy === "date") {
+      var groups = {};
+      filtered.forEach(function(e) {
+        if (!groups[e.date]) groups[e.date] = [];
+        groups[e.date].push(e);
+      });
+      var dates = Object.keys(groups).sort();
+      var html = "";
+      dates.forEach(function(date) {
+        var dayTotal = 0;
+        groups[date].forEach(function(e) { dayTotal += e.hours; });
+        html += '<div class="day-group"><div class="day-header"><span class="day-name">' + formatDate(date) + '</span><span class="day-total">' + dayTotal + 'h</span></div>';
+        groups[date].forEach(function(e) { html += renderBubble(e); });
+        html += '</div>';
+      });
+      $("weeklyEntries").innerHTML = html || '<div class="empty-state"><div class="empty-state-icon">&#128203;</div><div class="empty-state-title">No entries this week</div><div class="empty-state-text">Start tracking your time in the New Entry tab</div></div>';
+    } else {
+      var html = "";
+      filtered.forEach(function(e) { html += renderBubble(e); });
+      $("weeklyEntries").innerHTML = html || '<div class="empty-state"><div class="empty-state-icon">&#128203;</div><div class="empty-state-title">No entries this week</div><div class="empty-state-text">Start tracking your time in the New Entry tab</div></div>';
+    }
+
+    $("weeklyEntries").querySelectorAll(".entry-action-btn.edit").forEach(function(btn) {
+      btn.addEventListener("click", function() { editEntry(btn.dataset.id); });
+    });
+    $("weeklyEntries").querySelectorAll(".entry-action-btn.delete").forEach(function(btn) {
+      btn.addEventListener("click", function() { confirmDelete(btn.dataset.id); });
+    });
+  }
+
+  function renderBubble(e) {
+    var clientColor = getColor(e.client);
+    var label = escHtml(bubbleLabel(e));
+    var projectHtml = e.project ? colorBadge(e.project) : '<span style="font-size:12px;">-</span>';
+    return '<div class="entry-bubble" style="border-left:3px solid ' + clientColor.dot + ';"><div class="entry-info"><div class="entry-task-label">' + colorDot(e.client) + label + '</div><div class="entry-details"><span class="entry-detail-item">&#128197; ' + formatDate(e.date) + '</span><span class="entry-detail-item">' + projectHtml + '</span>' + (e.description ? '<span class="entry-detail-item">&#128221; ' + escHtml(e.description.substring(0,30)) + '</span>' : '') + '</div></div><div class="entry-hours">' + e.hours + 'h</div><div class="entry-actions"><button class="entry-action-btn edit" data-id="' + e.id + '" title="Edit">&#9998;</button><button class="entry-action-btn delete" data-id="' + e.id + '" title="Delete">&#128465;</button></div></div>';
+  }
+
+  function escHtml(str) {
+    var div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  var COLOR_PALETTE = [
+    {bg: "rgba(74,140,126,0.14)", fg: "#3B7568", dot: "#4A8C7E"},
+    {bg: "rgba(194,124,78,0.14)", fg: "#A0603A", dot: "#C27C4E"},
+    {bg: "rgba(123,107,168,0.14)", fg: "#6B5A9A", dot: "#7B6BA8"},
+    {bg: "rgba(78,145,194,0.14)", fg: "#3A6FA0", dot: "#4E91C2"},
+    {bg: "rgba(194,78,130,0.14)", fg: "#A03A6E", dot: "#C24E82"},
+    {bg: "rgba(168,155,60,0.14)", fg: "#8A7E20", dot: "#A89B3C"},
+    {bg: "rgba(78,194,160,0.14)", fg: "#2E8A6C", dot: "#4EC2A0"},
+    {bg: "rgba(194,100,78,0.14)", fg: "#A04A3A", dot: "#C2644E"},
+    {bg: "rgba(100,130,190,0.14)", fg: "#4A6AA0", dot: "#6482BE"},
+    {bg: "rgba(170,120,180,0.14)", fg: "#8A5A98", dot: "#AA78B4"},
+    {bg: "rgba(130,180,100,0.14)", fg: "#5A8A3A", dot: "#82B464"},
+    {bg: "rgba(200,160,80,0.14)", fg: "#9A7A2A", dot: "#C8A050"}
+  ];
+
+  function hashStr(str) {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash = hash & hash;
+    }
+    return Math.abs(hash);
+  }
+
+  function getColor(name) {
+    if (!name) return COLOR_PALETTE[0];
+    return COLOR_PALETTE[hashStr(name) % COLOR_PALETTE.length];
+  }
+
+  function colorDot(name) {
+    var c = getColor(name);
+    return '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + c.dot + ';margin-right:6px;flex-shrink:0;"></span>';
+  }
+
+  function colorBadge(name) {
+    var c = getColor(name);
+    return '<span style="display:inline-flex;align-items:center;padding:2px 10px;border-radius:12px;background:' + c.bg + ';color:' + c.fg + ';font-size:12px;font-weight:600;white-space:nowrap;">' + colorDot(name) + escHtml(name) + '</span>';
+  }
+
+  var pendingDeleteId = null;
+
+  function confirmDelete(id) {
+    pendingDeleteId = id;
+    showModal("deleteModal");
+  }
+
+  $("deleteCancel").addEventListener("click", function() { hideModal("deleteModal"); pendingDeleteId = null; });
+  $("deleteConfirm").addEventListener("click", function() {
+    if (pendingDeleteId) {
+      state.entries = state.entries.filter(function(e) { return e.id !== pendingDeleteId; });
+      saveState();
+      renderAll();
+      showToast("Entry deleted");
+    }
+    hideModal("deleteModal");
+    pendingDeleteId = null;
+  });
+
+  function editEntry(id) {
+    var entry = state.entries.find(function(e) { return e.id === id; });
+    if (!entry) return;
+    state.editingId = id;
+    $("entryDate").value = entry.date;
+    $("entryHours").value = entry.hours;
+    $("entryClient").value = entry.client || "";
+    $("entryProject").value = entry.project || "";
+    $("entryTask").value = entry.task || "";
+    $("entryDescription").value = entry.description || "";
+    $("saveEntry").innerHTML = "&#10003; Update Entry";
+    $$(".tab")[0].click();
+    showToast("Editing entry...");
+  }
+
+  $("prevWeek").addEventListener("click", function() { state.weekOffset--; renderWeekly(); });
+  $("nextWeek").addEventListener("click", function() { state.weekOffset++; renderWeekly(); });
+
+  $$(".sort-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      $$(".sort-btn").forEach(function(b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      state.sortBy = btn.dataset.sort;
+      renderWeekly();
+    });
+  });
+
+  function getReportEntries() {
+    var entries;
+    if (state.reportShowAll) {
+      entries = state.entries.slice();
+    } else {
+      var range = getWeekRange(state.reportWeekOffset);
+      var startStr = dateToStr(range.start);
+      var endStr = dateToStr(range.end);
+      entries = state.entries.filter(function(e) { return e.date >= startStr && e.date <= endStr; });
+    }
+
+    var search = ($("reportSearch").value || "").toLowerCase().trim();
+    var fClient = $("filterClient").value;
+    var fProject = $("filterProject").value;
+    var fTask = $("filterTask").value;
+
+    if (search) {
+      entries = entries.filter(function(e) {
+        return (e.client||"").toLowerCase().indexOf(search) !== -1
+          || (e.project||"").toLowerCase().indexOf(search) !== -1
+          || (e.task||"").toLowerCase().indexOf(search) !== -1
+          || (e.description||"").toLowerCase().indexOf(search) !== -1
+          || (e.date||"").indexOf(search) !== -1;
+      });
+    }
+    if (fClient) { entries = entries.filter(function(e) { return e.client === fClient; }); }
+    if (fProject) { entries = entries.filter(function(e) { return e.project === fProject; }); }
+    if (fTask) { entries = entries.filter(function(e) { return e.task === fTask; }); }
+
+    return entries.sort(function(a,b) { return b.date.localeCompare(a.date); });
+  }
+
+  function populateFilterDropdowns() {
+    var clients = {};
+    var projects = {};
+    var tasks = {};
+    state.entries.forEach(function(e) {
+      if (e.client) clients[e.client] = true;
+      if (e.project) projects[e.project] = true;
+      if (e.task) tasks[e.task] = true;
+    });
+
+    function fillSelect(id, items, label) {
+      var el = $(id);
+      var current = el.value;
+      var html = '<option value="">All ' + label + '</option>';
+      Object.keys(items).sort().forEach(function(item) {
+        var sel = item === current ? " selected" : "";
+        html += '<option value="' + escHtml(item) + '"' + sel + '>' + escHtml(item) + '</option>';
+      });
+      el.innerHTML = html;
+    }
+
+    fillSelect("filterClient", clients, "Clients");
+    fillSelect("filterProject", projects, "Projects");
+    fillSelect("filterTask", tasks, "Tasks");
+  }
+
+  function renderReport() {
+    var range = getWeekRange(state.reportWeekOffset);
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    $("reportWeekLabel").textContent = state.reportShowAll ? "All Entries" : months[range.start.getMonth()] + " " + range.start.getDate() + " - " + months[range.end.getMonth()] + " " + range.end.getDate() + ", " + range.end.getFullYear();
+
+    var allBtn = $("reportAllToggle");
+    if (state.reportShowAll) {
+      allBtn.className = "btn btn-primary btn-sm";
+      allBtn.style.marginLeft = "8px";
+    } else {
+      allBtn.className = "btn btn-secondary btn-sm";
+      allBtn.style.marginLeft = "8px";
+    }
+
+    populateFilterDropdowns();
+
+    var sorted = getReportEntries();
+    var total = 0;
+    var html = "";
+    sorted.forEach(function(e) {
+      total += e.hours;
+      html += "<tr><td>" + formatDate(e.date) + "</td><td>" + colorBadge(e.client||"-") + "</td><td>" + colorBadge(e.project||"-") + "</td><td>" + escHtml(e.task||"-") + "</td><td>" + escHtml(e.description||"-") + "</td><td><strong>" + e.hours + "h</strong></td></tr>";
+    });
+    $("reportBody").innerHTML = html || '<tr><td colspan="6" style="text-align:center; padding:32px; color:var(--text-muted);">No entries found</td></tr>';
+    $("reportTotal").textContent = total + "h";
+    $("reportCount").textContent = sorted.length + " entr" + (sorted.length === 1 ? "y" : "ies");
+  }
+
+  var searchTimer = null;
+  $("reportSearch").addEventListener("input", function() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(renderReport, 200);
+  });
+  $("filterClient").addEventListener("change", renderReport);
+  $("filterProject").addEventListener("change", renderReport);
+  $("filterTask").addEventListener("change", renderReport);
+  $("clearFilters").addEventListener("click", function() {
+    $("reportSearch").value = "";
+    $("filterClient").value = "";
+    $("filterProject").value = "";
+    $("filterTask").value = "";
+    renderReport();
+  });
+
+  $("reportPrevWeek").addEventListener("click", function() { state.reportWeekOffset--; state.reportShowAll = false; renderReport(); });
+  $("reportNextWeek").addEventListener("click", function() { state.reportWeekOffset++; state.reportShowAll = false; renderReport(); });
+  $("reportAllToggle").addEventListener("click", function() { state.reportShowAll = !state.reportShowAll; renderReport(); });
+
+  $("copyReport").addEventListener("click", function() {
+    var sorted = getReportEntries();
+    if (sorted.length === 0) { showToast("No entries to copy"); return; }
+    var text = "Date\tClient\tProject\tTask\tInc/Task Description\tHours\n";
+    sorted.forEach(function(e) {
+      text += e.date + "\t" + (e.client||"") + "\t" + (e.project||"") + "\t" + (e.task||"") + "\t" + (e.description||"") + "\t" + e.hours + "\n";
+    });
+    var total = 0;
+    sorted.forEach(function(e) { total += e.hours; });
+    text += "\t\t\t\tTotal\t" + total + "h\n";
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        showToast("Copied to clipboard!");
+      }).catch(function() {
+        fallbackCopy(text);
+      });
+    } else {
+      fallbackCopy(text);
+    }
+  });
+
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+      showToast("Copied to clipboard!");
+    } catch(e) {
+      showToast("Copy failed - please select and copy manually");
+    }
+    document.body.removeChild(ta);
+  }
+
+  $("exportCSV").addEventListener("click", function() {
+    var sorted = getReportEntries();
+    if (sorted.length === 0) { showToast("No entries to export"); return; }
+    var csv = "Date,Client,Project,Task,Inc/Task Description,Hours\n";
+    sorted.forEach(function(e) {
+      csv += '"' + e.date + '","' + (e.client||"").replace(/"/g,'""') + '","' + (e.project||"").replace(/"/g,'""') + '","' + (e.task||"").replace(/"/g,'""') + '","' + (e.description||"").replace(/"/g,'""') + '",' + e.hours + "\n";
+    });
+    var blob = new Blob([csv], { type: "text/csv" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "timesheet_" + getTodayStr() + ".csv";
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("CSV exported!");
+  });
+
+  function renderManage() {
+    renderChips("clientChips", state.clients, "clients");
+    renderChips("projectChips", state.projects, "projects");
+    renderChips("taskChips", state.tasks, "tasks");
+  }
+
+  function renderChips(containerId, items, listKey) {
+    var html = "";
+    var useColor = (listKey === "clients" || listKey === "projects");
+    items.forEach(function(item, i) {
+      var dotHtml = useColor ? colorDot(item) : "";
+      var c = useColor ? getColor(item) : null;
+      var bgStyle = useColor ? "background:" + c.bg + ";border-color:" + c.dot + ";" : "";
+      html += '<div class="chip" style="' + bgStyle + '">' + dotHtml + '<span>' + escHtml(item) + '</span><button class="chip-remove" data-key="' + listKey + '" data-index="' + i + '">&#10005;</button></div>';
+    });
+    $(containerId).innerHTML = html;
+    $(containerId).querySelectorAll(".chip-remove").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        state[btn.dataset.key].splice(parseInt(btn.dataset.index), 1);
+        saveState();
+        renderManage();
+      });
+    });
+  }
+
+  $("addClientBtn").addEventListener("click", function() { addToList("newClientInput", "clients"); });
+  $("addProjectBtn").addEventListener("click", function() { addToList("newProjectInput", "projects"); });
+  $("addTaskBtn").addEventListener("click", function() { addToList("newTaskInput", "tasks"); });
+
+  $("newClientInput").addEventListener("keydown", function(e) { if (e.key === "Enter") addToList("newClientInput", "clients"); });
+  $("newProjectInput").addEventListener("keydown", function(e) { if (e.key === "Enter") addToList("newProjectInput", "projects"); });
+  $("newTaskInput").addEventListener("keydown", function(e) { if (e.key === "Enter") addToList("newTaskInput", "tasks"); });
+
+  function addToList(inputId, listKey) {
+    var val = $(inputId).value.trim();
+    if (!val) return;
+    if (state[listKey].indexOf(val) !== -1) { showToast("Already exists"); return; }
+    state[listKey].push(val);
+    $(inputId).value = "";
+    saveState();
+    renderManage();
+    showToast("Added!");
+  }
+
+  $("clearAll").addEventListener("click", function() { showModal("clearModal"); });
+  $("clearCancel").addEventListener("click", function() { hideModal("clearModal"); });
+  $("clearConfirm").addEventListener("click", function() {
+    state.entries = [];
+    state.clients = [];
+    state.projects = [];
+    state.tasks = [];
+    saveState();
+    hideModal("clearModal");
+    renderAll();
+    showToast("All data cleared");
+  });
+
+  $("exportData").addEventListener("click", function() {
+    var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "timesheet_backup_" + getTodayStr() + ".json";
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Data exported!");
+  });
+
+  $("importData").addEventListener("click", function() { $("importFile").click(); });
+  $("importFile").addEventListener("change", function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        var data = JSON.parse(ev.target.result);
+        if (data.entries) state.entries = data.entries;
+        if (data.clients) state.clients = data.clients;
+        if (data.projects) state.projects = data.projects;
+        if (data.tasks) state.tasks = data.tasks;
+        saveState();
+        renderAll();
+        showToast("Data imported!");
+      } catch(err) {
+        showToast("Invalid file format");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  });
+
+  var deferredPrompt = null;
+
+  window.addEventListener("beforeinstallprompt", function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    $("installStatus").textContent = "Ready to install! Click the button above.";
+  });
+
+  $("installPWABtn").addEventListener("click", function() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(result) {
+        if (result.outcome === "accepted") {
+          showToast("App installed successfully!");
+        }
+        deferredPrompt = null;
+      });
+    } else {
+      showToast("Use your browser's install option (see Step 2)");
+    }
+  });
+
+  $("refreshBtn").addEventListener("click", function() {
+    state = loadState();
+    applyTheme();
+    renderAll();
+    showToast("Data refreshed!");
+  });
+
+  $("installGuideBtn").addEventListener("click", function() {
+    $$(".tab")[4].click();
+  });
+
+  function updateHotkeyPreview() {
+    var parts = [];
+    if ($("modCtrl").checked) parts.push("Ctrl");
+    if ($("modAlt").checked) parts.push("Alt");
+    if ($("modShift").checked) parts.push("Shift");
+    if ($("modWin").checked) parts.push("Win");
+    var letter = $("hotkeyLetter").value.toUpperCase();
+    parts.push(letter);
+    $("hotkeyPreview").textContent = parts.join(" + ");
+  }
+
+  ["modCtrl","modAlt","modShift","modWin"].forEach(function(id) {
+    $(id).addEventListener("change", updateHotkeyPreview);
+  });
+  $("hotkeyLetter").addEventListener("change", updateHotkeyPreview);
+
+  $("downloadAhk").addEventListener("click", function() {
+    var ahkMods = "";
+    var displayParts = [];
+    if ($("modCtrl").checked) { ahkMods += "^"; displayParts.push("Ctrl"); }
+    if ($("modAlt").checked) { ahkMods += "!"; displayParts.push("Alt"); }
+    if ($("modShift").checked) { ahkMods += "+"; displayParts.push("Shift"); }
+    if ($("modWin").checked) { ahkMods += "#"; displayParts.push("Win"); }
+    var letter = $("hotkeyLetter").value;
+    var displayKey = displayParts.join("+") + "+" + letter.toUpperCase();
+    var ahkKey = ahkMods + letter.toLowerCase();
+    var appUrl = $("ahkAppUrl").value.trim() || "http://localhost:8080/timesheet.html";
+
+    if (!ahkMods) {
+      showToast("Select at least one modifier key (Ctrl, Alt, Shift, or Win)");
+      return;
+    }
+
+    var script = "";
+    script += "; TimeLog - Quick Entry (AutoHotkey v2)\r\n";
+    script += "; Shortcut: " + displayKey + "\r\n";
+    script += "; Select text in any app, press " + displayKey + " to create an entry\r\n";
+    script += "; Install AutoHotkey v2: https://www.autohotkey.com\r\n";
+    script += "\r\n";
+    script += 'APP_URL := "' + appUrl + '"\r\n';
+    script += 'BROWSER_PATH := ""\r\n';
+    script += "\r\n";
+    script += "DetectBrowser() {\r\n";
+    script += '    chrome := "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"\r\n';
+    script += '    edge := "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"\r\n';
+    script += "    if FileExist(chrome)\r\n";
+    script += "        return chrome\r\n";
+    script += "    if FileExist(edge)\r\n";
+    script += "        return edge\r\n";
+    script += '    return ""\r\n';
+    script += "}\r\n";
+    script += "\r\n";
+    script += "BROWSER_PATH := DetectBrowser()\r\n";
+    script += "\r\n";
+    script += 'A_IconTip := "TimeLog - ' + displayKey + ' to log entry"\r\n';
+    script += 'TraySetIcon("shell32.dll", 22)\r\n';
+    script += "\r\n";
+    script += "trayMenu := A_TrayMenu\r\n";
+    script += "trayMenu.Delete()\r\n";
+    script += 'trayMenu.Add("New Timesheet Entry", (*) => CaptureAndOpen())\r\n';
+    script += 'trayMenu.Add("New Entry (no text)", (*) => OpenBlank())\r\n';
+    script += "trayMenu.Add()\r\n";
+    script += 'trayMenu.Add("Open Timesheet App", (*) => OpenApp())\r\n';
+    script += "trayMenu.Add()\r\n";
+    script += 'trayMenu.Add("Exit", (*) => ExitApp())\r\n';
+    script += 'trayMenu.Default := "New Timesheet Entry"\r\n';
+    script += "\r\n";
+    script += ahkKey + ":: CaptureAndOpen()\r\n";
+    script += "\r\n";
+    script += "CaptureAndOpen() {\r\n";
+    script += "    clipSaved := A_Clipboard\r\n";
+    script += '    A_Clipboard := ""\r\n';
+    script += '    Send("^c")\r\n';
+    script += "    if !ClipWait(1) {\r\n";
+    script += "        A_Clipboard := clipSaved\r\n";
+    script += "        OpenBlank()\r\n";
+    script += "        return\r\n";
+    script += "    }\r\n";
+    script += "    selectedText := A_Clipboard\r\n";
+    script += "    A_Clipboard := clipSaved\r\n";
+    script += '    selectedText := RegExReplace(selectedText, "\\r?\\n", " ")\r\n';
+    script += '    selectedText := RegExReplace(selectedText, "\\s+", " ")\r\n';
+    script += "    selectedText := Trim(selectedText)\r\n";
+    script += "    if StrLen(selectedText) > 200\r\n";
+    script += "        selectedText := SubStr(selectedText, 1, 200)\r\n";
+    script += "    OpenWithTask(selectedText)\r\n";
+    script += "}\r\n";
+    script += "\r\n";
+    script += "OpenWithTask(taskText) {\r\n";
+    script += "    encoded := UriEncode(taskText)\r\n";
+    script += '    url := APP_URL . "?task=" . encoded . "&hours=1&popup=1"\r\n';
+    script += "    LaunchPopup(url)\r\n";
+    script += "}\r\n";
+    script += "\r\n";
+    script += "OpenBlank() {\r\n";
+    script += '    url := APP_URL . "?popup=1"\r\n';
+    script += "    LaunchPopup(url)\r\n";
+    script += "}\r\n";
+    script += "\r\n";
+    script += "OpenApp() {\r\n";
+    script += "    LaunchApp(APP_URL)\r\n";
+    script += "}\r\n";
+    script += "\r\n";
+    script += "LaunchPopup(url) {\r\n";
+    script += '    if BROWSER_PATH = ""\r\n';
+    script += "        Run(url)\r\n";
+    script += "    else\r\n";
+    script += "        Run('\"' . BROWSER_PATH . '\" \"--app=' . url . '\"')\r\n";
+    script += "}\r\n";
+    script += "\r\n";
+    script += "LaunchApp(url) {\r\n";
+    script += '    if BROWSER_PATH = ""\r\n';
+    script += "        Run(url)\r\n";
+    script += "    else\r\n";
+    script += "        Run('\"' . BROWSER_PATH . '\" \"--app=' . url . '\"')\r\n";
+    script += "}\r\n";
+    script += "\r\n";
+    script += "UriEncode(str) {\r\n";
+    script += '    result := ""\r\n';
+    script += "    loop parse, str {\r\n";
+    script += "        ch := A_LoopField\r\n";
+    script += '        if RegExMatch(ch, "[A-Za-z0-9_.~-]")\r\n';
+    script += "            result .= ch\r\n";
+    script += "        else {\r\n";
+    script += "            code := Ord(ch)\r\n";
+    script += "            if code < 128 {\r\n";
+    script += '                result .= "%" . Format("{:02X}", code)\r\n';
+    script += "            } else {\r\n";
+    script += "                buf := Buffer(4)\r\n";
+    script += '                len := StrPut(ch, buf, "UTF-8") - 1\r\n';
+    script += "                loop len\r\n";
+    script += '                    result .= "%" . Format("{:02X}", NumGet(buf, A_Index - 1, "UChar"))\r\n';
+    script += "            }\r\n";
+    script += "        }\r\n";
+    script += "    }\r\n";
+    script += "    return result\r\n";
+    script += "}\r\n";
+
+    var blob = new Blob([script], { type: "application/octet-stream" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "TimesheetQuickEntry.ahk";
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Script downloaded! Double-click to run.");
+  });
+
+  var urlParams = new URLSearchParams(window.location.search);
+  var isPopup = urlParams.get("popup") === "1";
+  var capturedTask = urlParams.get("task");
+
+  if (isPopup) {
+    document.body.classList.add("popup-mode");
+    $("saveCloseEntry").style.display = "";
+    $("saveEntry").className = "btn btn-secondary";
+    $("saveEntry").innerHTML = "&#10003; Save";
+    try { window.resizeTo(520, 660); window.moveTo(Math.max(0, (screen.width - 520) / 2), 80); } catch(e) {}
+  }
+
+
+  // Open App button in popup
+  var openAppBtn = $("openAppBtn");
+  if (openAppBtn) {
+    openAppBtn.addEventListener("click", function() {
+      var appUrl = window.location.href.replace(/[?#].*$/, "");
+      window.open(appUrl, "_blank");
+    });
+  }
+
+  // Popup: Enter key saves and closes (validates all fields)
+  if (isPopup) {
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+        var active = document.activeElement;
+        var tag = active ? active.tagName : "";
+        if (tag === "TEXTAREA") return;
+        if (active && active.classList.contains("lookup-dropdown")) return;
+        // Validate
+        var client = $("entryClient").value.trim();
+        var project = $("entryProject").value.trim();
+        var task = $("entryTask").value.trim();
+        var desc = $("entryDescription").value.trim();
+        if (!client) { showToast("Please fill in Client"); $("entryClient").focus(); return; }
+        if (!project) { showToast("Please fill in Project"); $("entryProject").focus(); return; }
+        if (!task) { showToast("Please fill in Task"); $("entryTask").focus(); return; }
+        if (!desc) { showToast("Please fill in Task Description"); $("entryDescription").focus(); return; }
+        var saved = doSave(true);
+        if (saved) {
+          setTimeout(function() { window.close(); }, 800);
+        }
+      }
+    });
+  }
+
+  if (capturedTask) {
+    $("entryDescription").value = capturedTask;
+    $("entryHours").value = urlParams.get("hours") || "1";
+    if (isPopup) {
+      $("popupSourceText").textContent = capturedTask;
+    }
+  }
+
+
+  // Day view state
+  var viewMode = state.viewMode || "week"; // "week" or "day"
+
+  function getDayStr(offset) {
+    var d = new Date();
+    d.setDate(d.getDate() + offset);
+    return dateToStr(d);
+  }
+
+  function setViewMode(mode) {
+    viewMode = mode;
+    state.viewMode = mode;
+    if (mode === "week") {
+      $("weekNavBar").style.display = "";
+      $("dayNavBar").style.display = "none";
+      $("dayDatePicker").style.display = "none";
+      $("viewModeWeek").classList.add("active");
+      $("viewModeDay").classList.remove("active");
+    } else {
+      $("weekNavBar").style.display = "none";
+      $("dayNavBar").style.display = "";
+      $("dayDatePicker").style.display = "";
+      $("viewModeWeek").classList.remove("active");
+      $("viewModeDay").classList.add("active");
+      $("dayDatePicker").value = getDayStr(state.dayOffset);
+    }
+    renderWeekly();
+  }
+
+  $("viewModeWeek").addEventListener("click", function() { setViewMode("week"); });
+  $("viewModeDay").addEventListener("click", function() { setViewMode("day"); });
+  $("viewToday").addEventListener("click", function() {
+    state.dayOffset = 0;
+    state.weekOffset = 0;
+    if (viewMode === "day") {
+      $("dayDatePicker").value = getTodayStr();
+      renderWeekly();
+    } else {
+      renderWeekly();
+    }
+  });
+
+  $("dayDatePicker").addEventListener("change", function() {
+    var val = $("dayDatePicker").value;
+    if (!val) return;
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var picked = new Date(val + "T00:00:00");
+    var diff = Math.round((picked - today) / 86400000);
+    state.dayOffset = diff;
+    renderWeekly();
+  });
+
+  $("prevDay").addEventListener("click", function() { state.dayOffset--; $("dayDatePicker").value = getDayStr(state.dayOffset); renderWeekly(); });
+  $("nextDay").addEventListener("click", function() { state.dayOffset++; $("dayDatePicker").value = getDayStr(state.dayOffset); renderWeekly(); });
+
+  // Recent entries
+  function renderRecentEntries() {
+    var section = $("recentEntriesSection");
+    var list = $("recentEntriesList");
+    if (!section || !list) return;
+    if (document.body.classList.contains("popup-mode")) {
+      section.style.display = "none";
+      return;
+    }
+    section.style.display = "";
+    var sorted = state.entries.slice().sort(function(a,b) {
+      if (b.date !== a.date) return b.date.localeCompare(a.date);
+      return 0;
+    }).slice(0, 6);
+    if (sorted.length === 0) {
+      list.innerHTML = '<div class="empty-state" style="padding:24px 0;"><div class="empty-state-icon" style="font-size:32px;">&#128203;</div><div class="empty-state-text">No entries yet</div></div>';
+      return;
+    }
+    var html = "";
+    sorted.forEach(function(e) { html += renderBubble(e); });
+    list.innerHTML = html;
+    list.querySelectorAll(".entry-action-btn.edit").forEach(function(btn) {
+      btn.addEventListener("click", function() { editEntry(btn.dataset.id); });
+    });
+    list.querySelectorAll(".entry-action-btn.delete").forEach(function(btn) {
+      btn.addEventListener("click", function() { confirmDelete(btn.dataset.id); });
+    });
+  }
+
+  function renderAll() {
+    updateStats();
+    renderWeekly();
+    renderReport();
+    renderManage();
+    renderRecentEntries();
+  }
+
+  applyTheme();
+  renderAll();
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(function() {});
+  }
+})();
+</script>
+</body>
+</html>

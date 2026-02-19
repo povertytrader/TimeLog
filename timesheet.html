@@ -1471,7 +1471,7 @@ body.popup-mode .popup-open-app-btn { display: flex; }
   function bubbleLabel(entry) {
     var client = entry.client || "No Client";
     var desc = entry.description || entry.task || "";
-    var truncated = desc.length > 35 ? desc.substring(0, 35) + "…" : desc;
+    var truncated = desc.length > 60 ? desc.substring(0, 60) + "…" : desc;
     return client + "." + truncated;
   }
 

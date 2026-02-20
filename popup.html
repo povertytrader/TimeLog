@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TimeLog Settings</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    background: #1E2326;
+    color: #E2E6E9;
+    width: 300px;
+    padding: 20px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #3A4248;
+  }
+
+  .logo {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #5EBAA8, #3D7A8C);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #E2E6E9;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    color: #6D7A82;
+    margin-top: 1px;
+  }
+
+  .label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #9DAAB2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 13px;
+    background: #2C3338;
+    border: 1px solid #3A4248;
+    border-radius: 7px;
+    color: #E2E6E9;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus {
+    border-color: #5EBAA8;
+    box-shadow: 0 0 0 3px rgba(94,186,168,0.15);
+  }
+
+  .btn {
+    width: 100%;
+    padding: 9px;
+    margin-top: 12px;
+    background: linear-gradient(135deg, #5EBAA8, #3D7A8C);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn:hover { opacity: 0.9; }
+
+  .open-app-btn {
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+    background: rgba(94,186,168,0.1);
+    color: #5EBAA8;
+    border: 1px solid #5EBAA8;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .open-app-btn:hover { background: #5EBAA8; color: white; }
+
+  .toast {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #5EBAA8;
+    color: white;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    display: none;
+    text-align: center;
+  }
+
+  .hint {
+    margin-top: 16px;
+    padding: 12px;
+    background: rgba(94,186,168,0.08);
+    border: 1px solid rgba(94,186,168,0.2);
+    border-radius: 8px;
+    font-size: 12px;
+    color: #9DAAB2;
+    line-height: 1.5;
+  }
+
+  .hint strong { color: #5EBAA8; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">⏱</div>
+  <div>
+    <div class="title">TimeLog</div>
+    <div class="subtitle">Quick Entry Extension</div>
+  </div>
+</div>
+
+<div class="label">App URL</div>
+<input type="text" id="appUrl" placeholder="http://localhost:8080/timesheet.html">
+
+<button class="btn" id="saveBtn">Save Settings</button>
+<button class="open-app-btn" id="openAppBtn">Open TimeLog App</button>
+
+<div class="toast" id="toast">✓ Saved!</div>
+
+<div class="hint">
+  <strong>How to use:</strong><br>
+  Select any text on a webpage (ticket title, email subject, etc.), right-click, and choose <strong>"⏱ Create TimeLog entry"</strong>.
+</div>
+
+<script>
+  const DEFAULT_URL = "http://localhost:8080/timesheet.html";
+
+  // Load saved URL
+  chrome.storage.sync.get({ appUrl: DEFAULT_URL }, (settings) => {
+    document.getElementById("appUrl").value = settings.appUrl;
+  });
+
+  // Save
+  document.getElementById("saveBtn").addEventListener("click", () => {
+    const url = document.getElementById("appUrl").value.trim() || DEFAULT_URL;
+    chrome.storage.sync.set({ appUrl: url }, () => {
+      const toast = document.getElementById("toast");
+      toast.style.display = "block";
+      setTimeout(() => { toast.style.display = "none"; }, 1500);
+    });
+  });
+
+  // Open app
+  document.getElementById("openAppBtn").addEventListener("click", () => {
+    chrome.storage.sync.get({ appUrl: DEFAULT_URL }, (settings) => {
+      chrome.tabs.create({ url: settings.appUrl });
+    });
+  });
+</script>
+</body>
+</html>
